@@ -1,4 +1,4 @@
-from avltree import AvlTree
+from avl_tree_iris import AvlTreeIris
 from sklearn.datasets import load_iris
 import pandas as pd
 import numpy as np
@@ -14,9 +14,9 @@ def calculate_composite_index(row):
     return np.mean(row[iris.feature_names])
 
 # Criar arvores AVL para cada especie
-avl_setosa = AvlTree()
-avl_versicolor = AvlTree()
-avl_virginica = AvlTree()
+avl_setosa = AvlTreeIris()
+avl_versicolor = AvlTreeIris()
+avl_virginica = AvlTreeIris()
 
 # Dicionario para mapear especies as arvores
 species_trees = {
