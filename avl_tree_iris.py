@@ -7,7 +7,31 @@ class AvlTreeIris(AvlTree):
         self.__setitem__(key, value)
 
     def find_closest(self, composite_index):
-        pass
+        if self._AvlTree__root_key is None:
+            return None, None
+
+        closest_key = self._AvlTree__root_key
+        min_diff = abs(composite_index - closest_key)
+
+        current_key = self._AvlTree__root_key
+        nodes = self._AvlTree__nodes
+
+        while current_key is not None:
+            current_node = nodes[current_key]
+            current_diff = abs(composite_index - current_key)
+
+            if current_diff < min_diff:
+                min_diff = current_diff
+                closest_key = current_key
+
+            if composite_index < current_key:
+                current_key = current_node.lesser_child_key
+            elif composite_index > current_key:
+                current_key = current_node.greater_child_key
+            else:
+                return current_key, current_node
+
+        return closest_key, nodes[closest_key]
 
     def height(self):
         root_key = self._AvlTree__root_key

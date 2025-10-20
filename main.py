@@ -50,9 +50,9 @@ def classify_sample(sample):
     min_diff = float('inf')
     predicted_species = None
     for species, tree in species_trees.items():
-        closest_node = tree.find_closest(composite_index)
-        if closest_node and abs(closest_node.key - composite_index) < min_diff:
-            min_diff = abs(closest_node.key - composite_index)
+        closest_key, closest_node = tree.find_closest(composite_index)
+        if closest_node and abs(closest_key - composite_index) < min_diff:
+            min_diff = abs(closest_key - composite_index)
             predicted_species = species
     return predicted_species
 
