@@ -1,4 +1,5 @@
 from avl_tree_iris import AvlTreeIris
+from gui import visualize_species_trees
 from sklearn.datasets import load_iris
 import pandas as pd
 import numpy as np
@@ -64,3 +65,6 @@ print(f"Amostra classificada como: {predicted}")
 # Relatorio da estrutura da arvore
 for species, tree in species_trees.items():
     print(f"Arvore para {species}: Altura = {tree.height()}, Nos = {tree.size()}")
+
+# Parte de interface visual para visualizar arvores
+visualize_species_trees(species_trees)
