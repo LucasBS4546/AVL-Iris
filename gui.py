@@ -83,11 +83,19 @@ def visualize_species_trees(species_trees, df, dados_estatisticos):
         notebook.add(frame, text=species)
 
     tables_frame = ttk.Frame(notebook)
+    texto_tables = "Exibição dos dados estatísticos coletados\nMédia\nMediana\nDesvio Padrão\n"
     notebook.add(tables_frame, text="Tabela")
 
-    texto_label_table = "PL = petal_length | PW = petal_width | SL = sepal_length | SW = sepal_width"
-    label_text_table = tk.Label(root_tk, text=texto_label_table, font=("Arial", 12))
-    label_text_table.pack(fill=tk.X)
+    def on_tab_changed(event):
+        selected_tab = event.widget.select()
+        tab_text = event.widget.tab(selected_tab, "text")
+
+        if tab_text == "Tabela":
+            label_text.config(text=texto_tables)
+        else:
+            label_text.config(text=texto_label)
+
+    notebook.bind("<<NotebookTabChanged>>", on_tab_changed)
 
     tree = ttk.Treeview(tables_frame, columns=("A", "B", "C", "D", "E"), show="headings", height=20)
     tree.heading("A", text="especie")
