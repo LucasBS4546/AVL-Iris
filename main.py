@@ -28,10 +28,11 @@ species_trees = {
 }
 
 # Inserir dados nas arvores AVL
-for index, row in df.iterrows():
-    species = row['species']
-    composite_index = calculate_composite_index(row)
-    species_trees[species].insert(composite_index, index)
+def inserir_dados():
+    for index, row in df.iterrows():
+        species = row['species']
+        composite_index = calculate_composite_index(row)
+        species_trees[species].insert(composite_index, index)
 
 # Calcular intervalos de confianca (95%)
 def calculate_confidence_interval(data):
@@ -40,11 +41,11 @@ def calculate_confidence_interval(data):
     ci_lower, ci_upper = norm.interval(0.95, loc=mean, scale=std/np.sqrt(len(data)))
     return mean, ci_lower, ci_upper
 
-# Exemplo: Intervalo de confianca para comprimento da petala
-for species in df['species'].unique():
-    species_data = df[df['species'] == species]['petal length (cm)']
-    mean, ci_lower, ci_upper = calculate_confidence_interval(species_data)
-    print(f"{species}: Media = {mean:.2f}, Intervalo de Confianca (95%) = [{ci_lower:.2f}, {ci_upper:.2f}]")
+def testar_intervalo_confianca(campo):
+    for species in df['species'].unique():
+        species_data = df[df['species'] == species][campo]
+        mean, ci_lower, ci_upper = calculate_confidence_interval(species_data)
+        print(f"{species}: Media = {mean:.2f}, Intervalo de Confianca (95%) = [{ci_lower:.2f}, {ci_upper:.2f}]")
 
 # Funcao de classificacao
 def classify_sample(sample):
@@ -58,17 +59,32 @@ def classify_sample(sample):
             predicted_species = species
     return predicted_species
 
-# Exemplo de uso
-sample = pd.Series([5.1, 3.5, 1.4, 0.2], index=iris.feature_names)
-predicted = classify_sample(sample)
-print(f"Amostra classificada como: {predicted}")
+def classifica_amostra(dados):
+    sample = pd.Series(dados, index=iris.feature_names)
+    predicted = classify_sample(sample)
+    print(f"Amostra classificada como: {predicted}")
 
-# Relatorio da estrutura da arvore
-for species, tree in species_trees.items():
-    print(f"Arvore para {species}: Altura = {tree.height()}, Nos = {tree.size()}")
+def relatorio():
+    # Printa alguns dados no terminal
+    for species, tree in species_trees.items():
+        print(f"Arvore para {species}: Altura = {tree.height()}, Nos = {tree.size()}")
 
-# Coleta calculos estatisticos
-dados_estatisticos = calcula_estatisticas(df)
+    # Coleta calculos estatisticos
+    dados_estatisticos = calcula_estatisticas(df)
 
-# Parte de interface visual para visualizar arvores
-visualize_species_trees(species_trees, df, dados_estatisticos)
+    # Parte de interface visual para visualizar arvores e resultados estatísticos
+    visualize_species_trees(species_trees, df, dados_estatisticos)
+
+if __name__ == "__main__":
+
+    # Constroi arvores
+    inserir_dados()
+
+    # Intervalo de confianca para comprimento da petala
+    testar_intervalo_confianca('petal length (cm)')
+
+    # Classificao de amostra
+    classifica_amostra([5.1, 3.5, 1.4, 0.2])
+
+    # Relatorio da estrutura da arvore + dados estatisticos
+    relatorio()
