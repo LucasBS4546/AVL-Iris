@@ -11,10 +11,6 @@ iris = load_iris()
 df = pd.DataFrame(data=iris.data, columns=iris.feature_names)
 df['species'] = iris.target_names[iris.target]
 
-# Funcao para calcular indice composto
-def calculate_composite_index(row):
-    return np.mean(row[iris.feature_names])
-
 # Criar arvores AVL para cada especie
 avl_setosa = AvlTreeIris()
 avl_versicolor = AvlTreeIris()
@@ -27,12 +23,17 @@ species_trees = {
     'virginica': avl_virginica
 }
 
-# Inserir dados nas arvores AVL
-def inserir_dados():
+# Inserir dados nas arvores AVL de determinada especie,
+# usando determinada metrica (petal_length, sepal_width..)
+def inserir_dados(species, metric):
+    media_metrica = df[metric].mean()
+    valor_mais_proximo, indice_mais_proximo = procura_valor_proximo(media_metrica, df)
+
+    species_trees[species].insert(valor_mais_proximo, indice_mais_proximo)
+
     for index, row in df.iterrows():
-        species = row['species']
-        composite_index = calculate_composite_index(row)
-        species_trees[species].insert(composite_index, index)
+        metric_value = row[metrica]
+        species_trees[species].insert(metric_value, index)
 
 # Calcular intervalos de confianca (95%)
 def calculate_confidence_interval(data):
