@@ -25,15 +25,13 @@ species_trees = {
 
 # Inserir dados nas arvores AVL de determinada especie,
 # usando determinada metrica (petal_length, sepal_width..)
-def inserir_dados(species, metric):
-    media_metrica = df[metric].mean()
-    valor_mais_proximo, indice_mais_proximo = procura_valor_proximo(media_metrica, df)
-
-    species_trees[species].insert(valor_mais_proximo, indice_mais_proximo)
-
+def inserir_dados(species, metrica):
     for index, row in df.iterrows():
-        metric_value = row[metrica]
-        species_trees[species].insert(metric_value, index)
+        if row["species"] == species:
+            species_trees[species].insert(row[metrica], index)
+
+def calculate_composite_index(row):
+    return np.mean(row[iris.feature_names])
 
 # Calcular intervalos de confianca (95%)
 def calculate_confidence_interval(data):
@@ -65,7 +63,7 @@ def classifica_amostra(dados):
     predicted = classify_sample(sample)
     print(f"Amostra classificada como: {predicted}")
 
-def relatorio():
+def relatorio(regra_construcao_arvore):
     # Printa alguns dados no terminal
     for species, tree in species_trees.items():
         print(f"Arvore para {species}: Altura = {tree.height()}, Nos = {tree.size()}")
@@ -74,12 +72,25 @@ def relatorio():
     dados_estatisticos = calcula_estatisticas(df)
 
     # Parte de interface visual para visualizar arvores e resultados estatísticos
-    visualize_species_trees(species_trees, df, dados_estatisticos)
+    visualize_species_trees(species_trees, df, dados_estatisticos, regra_construcao_arvore)
 
 if __name__ == "__main__":
+    """ Cola de parametros
+    petal length (cm)
+    petal width (cm)
+    sepal length (cm)
+    sepal width (cm)
+    """
 
-    # Constroi arvores
-    inserir_dados()
+    regra_construcao_arvore = {
+        "setosa": {"chave": "petal length (cm)", "texto": "PL"},
+        "versicolor": {"chave": "petal length (cm)", "texto": "PL"},
+        "virginica": {"chave": "petal length (cm)", "texto": "PL"}
+    }
+
+    for especie, metrica in regra_construcao_arvore.items():
+        inserir_dados(especie, metrica["chave"])
+
 
     # Intervalo de confianca para comprimento da petala
     testar_intervalo_confianca('petal length (cm)')
@@ -88,4 +99,4 @@ if __name__ == "__main__":
     classifica_amostra([5.1, 3.5, 1.4, 0.2])
 
     # Relatorio da estrutura da arvore + dados estatisticos
-    relatorio()
+    relatorio(regra_construcao_arvore)

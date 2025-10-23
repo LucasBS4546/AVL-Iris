@@ -23,11 +23,5 @@ def calcula_estatisticas(df):
                 "sepal_width": func(subset["sepal width (cm)"])
             }
         
-        resultados[metrica]["geral"] = {
-            "petal_length": func(df["petal length (cm)"]),
-            "petal_width": func(df["petal width (cm)"]),
-            "sepal_length": func(df["sepal length (cm)"]),
-            "sepal_width": func(df["sepal width (cm)"])
-        }
 
     return resultados

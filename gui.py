@@ -3,7 +3,7 @@ from tkinter import ttk
 from avltree import AvlTree
 
 class AvlTreeVisualizer(ttk.Frame):
-    def __init__(self, master_tk, window_title, tree, df):
+    def __init__(self, master_tk, tree, df, regra_arvore):
         super().__init__(master_tk)
         self.pack(fill=tk.BOTH, expand=True)
         self.canvas = tk.Canvas(self, bg="white", width=1200, height=800)
@@ -14,6 +14,7 @@ class AvlTreeVisualizer(ttk.Frame):
         self.level_height = 80
         self.horizontal_spacing = 40
         self.df_iris = df
+        self.regra_arvore = regra_arvore
 
         self.__draw_tree()
 
@@ -47,12 +48,7 @@ class AvlTreeVisualizer(ttk.Frame):
             y = depth * self.level_height + self.node_radius + 20
             coords = (x, y)
             dados_iris = self.df_iris.iloc[nodes[key].value]
-            sl = dados_iris["sepal length (cm)"]
-            sw = dados_iris["sepal width (cm)"]
-            pl = dados_iris["petal length (cm)"]
-            pw = dados_iris["petal width (cm)"]
-            sp = dados_iris["species"]
-            str_node = f"{sp}\n{sl} | {sw}\n{pl} | {pw}"
+            str_node = self.__coleta_str_node(dados_iris)
             if parent_coords:
                 self.canvas.create_line(parent_coords[0], parent_coords[1], x, y, fill="black")
             self.canvas.create_oval(x - self.node_radius, y - self.node_radius,
@@ -64,13 +60,19 @@ class AvlTreeVisualizer(ttk.Frame):
 
         draw_node(root_key)
 
+    def __coleta_str_node(self, dados_iris):
+            especie_no = dados_iris["species"]
+            chave_metrica_no = self.regra_arvore[especie_no]["chave"]
+            txt_metrica_no = self.regra_arvore[especie_no]["texto"]
 
-def visualize_species_trees(species_trees, df, dados_estatisticos):
+            return f"{especie_no}\n{txt_metrica_no}: {dados_iris[chave_metrica_no]}"
+
+def visualize_species_trees(species_trees, df, dados_estatisticos, regra_construcao_arvore):
     root_tk = tk.Tk()
     root_tk.title("AVL Trees")
     root_tk.geometry("1200x800")
 
-    texto_label = "Ordem de exibição dos dados:\nSpecies\nSepal Length (cm) | Sepal Width (cm)\nPetal Length (cm) | Petal Width (cm)\n"
+    texto_label = "Exibicação de dados!\n"
 
     label_text = tk.Label(root_tk, text=texto_label, font=("Arial", 12))
     label_text.pack(fill=tk.X)
@@ -79,23 +81,11 @@ def visualize_species_trees(species_trees, df, dados_estatisticos):
     notebook.pack(fill=tk.BOTH, expand=True)
 
     for species, tree in species_trees.items():
-        frame = AvlTreeVisualizer(notebook, species, tree, df)
+        frame = AvlTreeVisualizer(notebook, tree, df, regra_construcao_arvore)
         notebook.add(frame, text=species)
 
     tables_frame = ttk.Frame(notebook)
-    texto_tables = "Exibição dos dados estatísticos coletados\nMédia\nMediana\nDesvio Padrão\n"
     notebook.add(tables_frame, text="Tabela")
-
-    def on_tab_changed(event):
-        selected_tab = event.widget.select()
-        tab_text = event.widget.tab(selected_tab, "text")
-
-        if tab_text == "Tabela":
-            label_text.config(text=texto_tables)
-        else:
-            label_text.config(text=texto_label)
-
-    notebook.bind("<<NotebookTabChanged>>", on_tab_changed)
 
     tree = ttk.Treeview(tables_frame, columns=("A", "B", "C", "D", "E"), show="headings", height=20)
     tree.heading("A", text="especie")
@@ -111,7 +101,7 @@ def visualize_species_trees(species_trees, df, dados_estatisticos):
     medias = []
     medianas = []
     dps = []
-    for especie in ["setosa", "versicolor", "virginica", "geral"]:
+    for especie in ["setosa", "versicolor", "virginica"]:
         for medida in ["petal_length", "petal_width", "sepal_length", "sepal_width"]:
             especies.append(especie)
             dados.append(medida)
